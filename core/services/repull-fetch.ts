@@ -61,6 +61,79 @@ async function getWorkspaceApiKey(workspaceId: string): Promise<string> {
   return decryptApiKey(ws.repullApiKey, ws.repullApiKeyEncrypted);
 }
 
+/**
+ * Result from `/v1/markets/browse` — paginated catalog of every market Atlas
+ * tracks (not just the customer's own). Used by the search-first browse UX.
+ *
+ * Snake_case echoed verbatim from the Repull API; we don't camel-case at the
+ * boundary because (a) it matches the OpenAPI spec and (b) the consumers are
+ * already snake-tolerant.
+ */
+export interface MarketsBrowseRow {
+  city: string;
+  country: string | null;
+  listings: number;
+  avg_adr: number | null;
+  subscribed?: boolean;
+}
+
+export interface MarketsBrowseResponse {
+  data: MarketsBrowseRow[];
+  pagination: {
+    next_cursor: string | null;
+    has_more: boolean;
+    total_in_filter: number;
+  };
+}
+
+export interface MarketsBrowseQuery {
+  q?: string;
+  country?: string;
+  cursor?: string;
+  limit?: number;
+  minListings?: number;
+  sort?: string;
+}
+
+/**
+ * Hit `GET /v1/markets/browse?q=&country=&cursor=&limit=` against the
+ * workspace's Repull API key. Snake_case query params match the contract.
+ *
+ * Returns `null` when the endpoint isn't deployed yet (404) so callers can
+ * render a graceful "search coming soon" fallback during the rolling backend
+ * deploy. All other errors propagate as `RepullFetchError`.
+ */
+export async function marketsBrowse(
+  workspaceId: string,
+  query: MarketsBrowseQuery = {},
+): Promise<MarketsBrowseResponse | null> {
+  try {
+    return await repullFetch<MarketsBrowseResponse>(
+      workspaceId,
+      'GET',
+      '/v1/markets/browse',
+      {
+        query: {
+          q: query.q,
+          country: query.country,
+          cursor: query.cursor,
+          limit: query.limit,
+          min_listings: query.minListings,
+          sort: query.sort,
+        },
+        // Catalog browse should be snappy — fail fast instead of hanging the
+        // page if the upstream is slow.
+        timeoutMs: 15_000,
+      },
+    );
+  } catch (err) {
+    if (err instanceof RepullFetchError && err.status === 404) {
+      return null;
+    }
+    throw err;
+  }
+}
+
 export async function repullFetch<T = unknown>(
   workspaceId: string,
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
