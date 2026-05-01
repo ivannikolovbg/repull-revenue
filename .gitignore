@@ -21,3 +21,4 @@ dist/
 .idea/
 .vercel/
 .vercel
+.env*.local

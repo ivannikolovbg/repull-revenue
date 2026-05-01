@@ -132,11 +132,11 @@ pnpm dev                    # http://localhost:3031`}</pre>
         &middot; Pricing models tuned by{' '}
         <a
           className="underline decoration-dotted hover:text-white"
-          href="https://vanio.ai"
+          href="https://atlasdna.ai"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Vanio AI
+          Atlas AI
         </a>{' '}
         &middot;{' '}
         <a
