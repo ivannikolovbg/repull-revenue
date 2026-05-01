@@ -10,28 +10,90 @@ import { MarketKpis } from './_components/market-kpis';
 
 export const dynamic = 'force-dynamic';
 
+/**
+ * Raw `/v1/markets/{city}` response shape from the upstream Repull API.
+ *
+ * Snake_case + numeric-strings echoed verbatim from Postgres. Anything that
+ * actually renders against this MUST go through `normalizeCityDetail()` —
+ * never read these fields directly from the JSX. A single missing/renamed
+ * field on the upstream side previously crashed the whole route (server 500
+ * + JS TypeError "Cannot read properties of undefined").
+ */
+interface RawCityDetail {
+  city?: string;
+  marketPosition?: {
+    myAdr?: number | null;
+    myRating?: number | null;
+    adrPercentile?: number | null;
+    ratingPercentile?: number | null;
+  } | null;
+  capacityGap?: {
+    myAvgGuests?: number | null;
+    marketAvgGuests?: number | null;
+    distribution?: { small?: number; medium?: number; large?: number } | null;
+  } | null;
+  supplyTrend?: Array<{ month?: string; new_listings?: number | string | null }> | null;
+  priceDistribution?: Array<{
+    label?: string;
+    count?: number | string | null;
+  }> | null;
+  bedroomBreakdown?: Array<{
+    bedrooms?: number | null;
+    count?: number | string | null;
+  }> | null;
+  propertyTypeMix?: Array<{
+    property_type?: string | null;
+    count?: number | string | null;
+  }> | null;
+  events?: Array<{
+    title?: string | null;
+    category?: string | null;
+    rank?: number | null;
+    attendance?: number | null;
+    start_date?: string | null;
+    end_date?: string | null;
+  }> | null;
+  topComps?: {
+    items?: Array<{
+      id?: number | string;
+      title?: string | null;
+      bedrooms?: number | null;
+      rating?: number | string | null;
+      review_count?: number | null;
+      current_nightly_rate?: number | string | null;
+      distance_km?: number | string | null;
+      thumbnail_url?: string | null;
+      url?: string | null;
+    }>;
+    page?: number;
+    pageSize?: number;
+    total?: number;
+  } | null;
+  [key: string]: unknown;
+}
+
 interface CityDetail {
   city: string;
-  marketPosition?: {
+  marketPosition: {
     adrPercentile: number | null;
     ratingPercentile: number | null;
     customerAdr: number | null;
     marketAvgAdr: number | null;
   } | null;
-  capacityGap?: { small: number; medium: number; large: number } | null;
-  supplyTrend?: Array<{ month: string; newComps: number }> | null;
-  priceDistribution?: Array<{ bucket: string; count: number }> | null;
-  bedroomBreakdown?: Array<{ bedrooms: number; count: number }> | null;
-  propertyTypeMix?: Array<{ type: string; count: number }> | null;
-  events?: Array<{
+  capacityGap: { small: number; medium: number; large: number } | null;
+  supplyTrend: Array<{ month: string; newComps: number }>;
+  priceDistribution: Array<{ bucket: string; count: number }>;
+  bedroomBreakdown: Array<{ bedrooms: number; count: number }>;
+  propertyTypeMix: Array<{ type: string; count: number }>;
+  events: Array<{
     title: string;
     category: string | null;
     rank: number | null;
     attendance: number | null;
-    startDate?: string | null;
-    endDate?: string | null;
-  }> | null;
-  topComps?: {
+    startDate: string | null;
+    endDate: string | null;
+  }>;
+  topComps: {
     data: Array<{
       id: number;
       name: string | null;
@@ -44,12 +106,105 @@ interface CityDetail {
       thumbnail: string | null;
       platformUrl: string | null;
     }>;
-    pagination?: { page: number; pageSize: number; total: number };
-  } | null;
-  benchmarks?: unknown;
-  wheelhouseTrends?: unknown;
-  healthSummary?: unknown;
-  [key: string]: unknown;
+    pagination: { page: number; pageSize: number; total: number };
+  };
+}
+
+function toNumber(v: unknown): number | null {
+  if (v == null || v === '') return null;
+  const n = typeof v === 'number' ? v : Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+
+function normalizeCityDetail(raw: RawCityDetail | null, fallbackCity: string): CityDetail {
+  const r = raw ?? {};
+  const dist = r.capacityGap?.distribution;
+  return {
+    city: r.city ?? fallbackCity,
+    marketPosition: r.marketPosition
+      ? {
+          adrPercentile: toNumber(r.marketPosition.adrPercentile),
+          ratingPercentile: toNumber(r.marketPosition.ratingPercentile),
+          customerAdr: toNumber(r.marketPosition.myAdr),
+          // Upstream doesn't expose a market-average ADR alongside the
+          // percentile yet — leave null and the KPI hint hides itself.
+          marketAvgAdr: null,
+        }
+      : null,
+    capacityGap: dist
+      ? {
+          small: toNumber(dist.small) ?? 0,
+          medium: toNumber(dist.medium) ?? 0,
+          large: toNumber(dist.large) ?? 0,
+        }
+      : null,
+    supplyTrend: Array.isArray(r.supplyTrend)
+      ? r.supplyTrend
+          .map((t) => ({
+            month: t?.month ?? '',
+            newComps: toNumber(t?.new_listings) ?? 0,
+          }))
+          .filter((t) => t.month)
+      : [],
+    priceDistribution: Array.isArray(r.priceDistribution)
+      ? r.priceDistribution
+          .map((p) => ({
+            bucket: p?.label ?? '',
+            count: toNumber(p?.count) ?? 0,
+          }))
+          .filter((p) => p.bucket)
+      : [],
+    bedroomBreakdown: Array.isArray(r.bedroomBreakdown)
+      ? r.bedroomBreakdown
+          .map((b) => ({
+            bedrooms: toNumber(b?.bedrooms) ?? 0,
+            count: toNumber(b?.count) ?? 0,
+          }))
+          // Drop the "-1" bucket Atlas emits for unknown-bedroom listings.
+          .filter((b) => b.bedrooms >= 0)
+      : [],
+    propertyTypeMix: Array.isArray(r.propertyTypeMix)
+      ? r.propertyTypeMix
+          .map((p) => ({
+            type: p?.property_type ?? '',
+            count: toNumber(p?.count) ?? 0,
+          }))
+          .filter((p) => p.type)
+      : [],
+    events: Array.isArray(r.events)
+      ? r.events
+          .filter((e) => e?.title)
+          .map((e) => ({
+            title: e.title ?? '',
+            category: e?.category ?? null,
+            rank: toNumber(e?.rank),
+            attendance: toNumber(e?.attendance),
+            startDate: e?.start_date ?? null,
+            endDate: e?.end_date ?? null,
+          }))
+      : [],
+    topComps: {
+      data: Array.isArray(r.topComps?.items)
+        ? r.topComps!.items!.map((c) => ({
+            id: toNumber(c?.id) ?? 0,
+            name: c?.title ?? null,
+            city: null,
+            bedrooms: toNumber(c?.bedrooms),
+            rating: toNumber(c?.rating),
+            reviewCount: toNumber(c?.review_count),
+            currentNightlyRate: toNumber(c?.current_nightly_rate),
+            distanceKm: toNumber(c?.distance_km),
+            thumbnail: c?.thumbnail_url ?? null,
+            platformUrl: c?.url ?? null,
+          }))
+        : [],
+      pagination: {
+        page: toNumber(r.topComps?.page) ?? 1,
+        pageSize: toNumber(r.topComps?.pageSize) ?? 20,
+        total: toNumber(r.topComps?.total) ?? 0,
+      },
+    },
+  };
 }
 
 async function CityContent({ city, page }: { city: string; page: number }) {
@@ -60,12 +215,16 @@ async function CityContent({ city, page }: { city: string; page: number }) {
   let error: string | null = null;
   try {
     // SDK gap: no `markets.get(city)` method — raw fetch until SDK regen.
-    data = await repullFetch<CityDetail>(
+    // The upstream response is snake_case + numeric-strings; normalize at the
+    // boundary so individual sub-components don't need to know about the
+    // transport shape (and so a missing field can't crash the route).
+    const raw = await repullFetch<RawCityDetail>(
       ctx.workspace.id,
       'GET',
       `/v1/markets/${encodeURIComponent(city)}`,
       { query: { compsPage: page } },
     );
+    data = normalizeCityDetail(raw, city);
   } catch (err) {
     error =
       err instanceof RepullFetchError
@@ -115,20 +274,20 @@ async function CityContent({ city, page }: { city: string; page: number }) {
         baseCurrency={ctx.workspace.baseCurrency}
       />
 
-      {data?.supplyTrend && data.supplyTrend.length > 0 ? (
+      {data && data.supplyTrend.length > 0 ? (
         <SupplyTrend trend={data.supplyTrend} />
       ) : null}
 
-      {data?.events && data.events.length > 0 ? (
+      {data && data.events.length > 0 ? (
         <MarketEvents events={data.events.slice(0, 12)} />
       ) : null}
 
-      {data?.topComps && data.topComps.data.length > 0 ? (
+      {data && data.topComps.data.length > 0 ? (
         <TopComps
           city={city}
           comps={data.topComps.data}
-          page={data.topComps.pagination?.page ?? page}
-          total={data.topComps.pagination?.total ?? data.topComps.data.length}
+          page={data.topComps.pagination.page || page}
+          total={data.topComps.pagination.total || data.topComps.data.length}
           baseCurrency={ctx.workspace.baseCurrency}
         />
       ) : null}
