@@ -144,7 +144,7 @@ export function MarketCalendarGrid({ city, days, baseCurrency, startDate }: Prop
                             ? 'bg-amber-400'
                             : 'bg-white/30',
                       )}
-                      title={`Wheelhouse demand: ${wheelhouseDemandTone}`}
+                      title={`Demand index: ${wheelhouseDemandTone}`}
                     />
                   ) : null}
                 </div>
@@ -259,8 +259,8 @@ function DayDrawer({
           <Stat label="Market min" value={day.marketMinRate} prefix={`${baseCurrency} `} />
           <Stat label="Market max" value={day.marketMaxRate} prefix={`${baseCurrency} `} />
           <Stat label="Comp occupancy" value={day.occupancyPct} suffix="%" />
-          <Stat label="Wheelhouse occ" value={day.wheelhouseOccupancy} suffix="%" />
-          <Stat label="Wheelhouse ADR" value={day.wheelhouseAdr} prefix={`${baseCurrency} `} />
+          <Stat label="Demand-index occ" value={day.wheelhouseOccupancy} suffix="%" />
+          <Stat label="Demand-index ADR" value={day.wheelhouseAdr} prefix={`${baseCurrency} `} />
         </div>
         {day.myPrice != null || day.myAvailable != null ? (
           <div className="mt-3 pt-3 border-t border-white/[0.06] grid grid-cols-2 gap-3 text-xs">

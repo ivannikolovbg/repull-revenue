@@ -4,8 +4,8 @@
  * Sticky bottom-right honesty banner.
  *
  * Repull Revenue is alpha — the pricing models are still in active fine-tuning
- * against real customer data. We do NOT pretend to be a finished AirDNA /
- * PriceLabs replacement yet. Manual host overrides always win, and this banner
+ * against real customer data. We do NOT pretend to be a finished revenue
+ * management product yet. Manual host overrides always win, and this banner
  * makes that contract explicit on every page.
  *
  * Dismissible per-session via sessionStorage so it doesn't get in the way once

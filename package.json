@@ -3,7 +3,7 @@
   "version": "0.1.0-alpha.0",
   "private": true,
   "license": "SEE LICENSE.md",
-  "description": "Open-source revenue management starter — pricing intelligence + market data in one fork-and-deploy template. PriceLabs + AirDNA killer. Powered by Repull.",
+  "description": "Open-source revenue management starter — pricing intelligence + market data, one fork-and-deploy template. Powered by Repull.",
   "type": "module",
   "scripts": {
     "dev": "next dev --turbopack -p 3031",

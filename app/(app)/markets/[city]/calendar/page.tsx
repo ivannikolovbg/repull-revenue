@@ -72,7 +72,7 @@ async function CalendarContent({ city, startDate, endDate }: { city: string; sta
       <header>
         <h1 className="text-2xl font-semibold">{city} · 365-day calendar</h1>
         <p className="text-sm muted mt-1">
-          Per-date market ADR, comp occupancy, Wheelhouse demand, and event overlay (concerts /
+          Per-date market ADR, comp occupancy, demand index, and event overlay (concerts /
           sports / festivals).
         </p>
       </header>

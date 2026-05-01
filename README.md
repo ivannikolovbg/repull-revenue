@@ -4,7 +4,7 @@
 
 **Open-source revenue management** for short-term rentals. Pricing intelligence + market data in one fork-and-deploy template, on top of [`@repull/sdk`](https://github.com/ivannikolovbg/repull-sdk) and [api.repull.dev](https://api.repull.dev).
 
-PriceLabs and AirDNA, in one repo, that you own.
+Pricing engine and market intelligence in one repo, that you own.
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/ivannikolovbg/repull-revenue&env=DATABASE_URL,AUTH_SECRET,AUTH_URL,REPULL_API_BASE_URL&envDescription=Postgres%20connection%20string%2C%20NextAuth%20secret%2C%20your%20app%20URL%2C%20Repull%20API%20base&envLink=https%3A%2F%2Fgithub.com%2Fivannikolovbg%2Frepull-revenue%23env-vars)
 
@@ -12,7 +12,7 @@ PriceLabs and AirDNA, in one repo, that you own.
 
 ## Why this exists
 
-Every short-term rental operator past five listings ends up paying for two products: a pricing tool (PriceLabs, Wheelhouse, Beyond) and a market intelligence product (AirDNA, Transparent, Mashvisor). They are expensive, opinionated, and you don't control the model or the data.
+Every short-term rental operator past five listings ends up paying for two separate products: a pricing tool and a market intelligence product. They are expensive, opinionated, and you don't control the model or the data.
 
 **Repull Revenue gives you both, as code, in one Next.js app you fork and deploy.** The pricing engine is yours to tune. The market data lands in your own Postgres. Manual override always wins. No vendor lock-in, no per-listing pricing tax.
 
@@ -129,7 +129,7 @@ Tables (all FK-linked back to `workspaces.id` with `ON DELETE CASCADE`):
 
 ## Benchmarks
 
-Coming soon. The current pricing models are in active fine-tuning against real customer data (the in-app honesty banner says so on every page, and we mean it). When the public benchmarks land they will live at `https://github.com/ivannikolovbg/repull-revenue#benchmarks` and will compare RevPAR uplift vs. PriceLabs and Wheelhouse on a fixed reference portfolio.
+Coming soon. The current pricing models are in active fine-tuning against real customer data (the in-app honesty banner says so on every page, and we mean it). When the public benchmarks land they will live at `https://github.com/ivannikolovbg/repull-revenue#benchmarks` and will report RevPAR uplift on a fixed reference portfolio.
 
 ## Contributing
 

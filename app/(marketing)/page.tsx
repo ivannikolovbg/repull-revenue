@@ -10,7 +10,7 @@ export default function LandingPage() {
       <h1 className="text-4xl md:text-6xl font-semibold mt-3 leading-tight">
         Open-source revenue management.
         <br />
-        <span className="muted font-normal">PriceLabs + AirDNA in one fork.</span>
+        <span className="muted font-normal">Pricing intelligence + market data, one fork.</span>
       </h1>
       <p className="muted mt-6 max-w-2xl text-lg">
         A forkable, self-hostable revenue manager for short-term rentals. Pricing intelligence and
