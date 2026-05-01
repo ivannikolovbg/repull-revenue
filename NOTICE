@@ -1,0 +1,6 @@
+Repull Revenue is licensed under the Repull Revenue Community
+License, Copyright Divanova Inc. All Rights Reserved.
+
+Depends on:
+  - @repull/sdk     (Repull SDK Community License)
+  - @repull/types   (Repull SDK Community License)

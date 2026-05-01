@@ -1,0 +1,23 @@
+node_modules/
+.pnpm-store/
+.next/
+out/
+dist/
+.turbo/
+
+# Vendored types ship their prebuilt dist — keep it tracked.
+!vendor/**/dist/
+!vendor/**/dist/**
+
+.env
+.env.local
+.env.*.local
+!.env.example
+
+*.log
+*.tsbuildinfo
+.DS_Store
+.vscode/
+.idea/
+.vercel/
+.vercel
