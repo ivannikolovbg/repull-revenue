@@ -4,11 +4,9 @@ import { ArrowLeft } from 'lucide-react';
 import { requireSessionWorkspace } from '@/core/lib/session';
 import { repullFetch, RepullFetchError } from '@/core/services/repull-fetch';
 import { ListingTabs } from './_components/listing-tabs';
-import type { Property } from '@repull/types';
-
 export const dynamic = 'force-dynamic';
 
-interface ListingDetail extends Partial<Property> {
+interface ListingDetail {
   id: number | string;
   name?: string | null;
   city?: string | null;
