@@ -48,7 +48,7 @@ async function CompContent({
   let error: string | null = null;
   try {
     // SDK gap: `listings.comps()` not yet on @repull/sdk — raw fetch.
-    // Endpoint shipped at vanio-repull-api 0e946bb.
+    // Endpoint shipped in the Repull API.
     data = await repullFetch<CompsResponse>(
       ctx.workspace.id,
       'GET',

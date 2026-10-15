@@ -4,7 +4,7 @@
  * The hand-written `@repull/sdk` (v0.1.0-alpha) only ships a subset of the
  * markets/listings/pricing surface — `markets.list()`, `listings.pricing.get`
  * and `listings.pricing.recommendations`/`action` are typed, but the deep-dive
- * routes added at vanio-repull-api (markets/{city}, markets/{city}/calendar,
+ * routes added to the Repull API (markets/{city}, markets/{city}/calendar,
  * listings, listings/{id}/comps, listings/pricing/bulk,
  * listings/{id}/pricing/history, listings/{id}/pricing/strategy) are not yet
  * exposed.
