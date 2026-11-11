@@ -103,8 +103,8 @@ pnpm dev                    # http://localhost:3031`}</pre>
         <div className="text-xs uppercase tracking-wide muted">Sister project</div>
         <h3 className="text-lg font-semibold mt-2">Need a channel manager too?</h3>
         <p className="muted text-sm mt-3 leading-relaxed">
-          Pair this with <code>repull-channel-manager</code> for the full stack: connect Airbnb /
-          Booking / VRBO, sync calendars and reservations, then layer revenue management on top.
+          Pair this with <code>repull-channel-manager</code> for the full stack: connect Airbnb,
+          Booking.com, Vrbo and more, sync calendars and reservations, then layer revenue management on top.
           Same license, same SDK, designed to be deployed side-by-side.
         </p>
         <div className="mt-4">
