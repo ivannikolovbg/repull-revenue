@@ -1,10 +1,8 @@
 # Repull Revenue
 
-> **Status:** v0.1.0-alpha — early preview. Forkable starter, not a hosted product.
+> **Status:** early preview. Forkable starter, not a hosted product.
 
-**Open-source revenue management** for short-term rentals. Pricing intelligence + market data in one fork-and-deploy template, on top of [`@repull/sdk`](https://github.com/ivannikolovbg/repull-sdk) and [api.repull.dev](https://api.repull.dev).
-
-Pricing engine and market intelligence in one repo, that you own.
+**Open-source revenue-management starter** for short-term rentals: a fork-and-deploy Next.js template for building your own rate tooling on top of [`@repull/sdk`](https://github.com/ivannikolovbg/repull-sdk) and [api.repull.dev](https://api.repull.dev). Listings, calendars and rates come from Airbnb, Booking.com, Vrbo and more channels, plus 15 PMS platforms, through one API key.
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/ivannikolovbg/repull-revenue&env=DATABASE_URL,AUTH_SECRET,AUTH_URL,REPULL_API_BASE_URL&envDescription=Postgres%20connection%20string%2C%20NextAuth%20secret%2C%20your%20app%20URL%2C%20Repull%20API%20base&envLink=https%3A%2F%2Fgithub.com%2Fivannikolovbg%2Frepull-revenue%23env-vars)
 
@@ -12,16 +10,13 @@ Pricing engine and market intelligence in one repo, that you own.
 
 ## Why this exists
 
-Every short-term rental operator past five listings ends up paying for two separate products: a pricing tool and a market intelligence product. They are expensive, opinionated, and you don't control the model or the data.
-
-**Repull Revenue gives you both, as code, in one Next.js app you fork and deploy.** The pricing engine is yours to tune. The market data lands in your own Postgres. Manual override always wins. No vendor lock-in, no per-listing pricing tax.
+Operators past a handful of listings want rate rules they control. Repull Revenue is a starting point, as code: the rules are yours to tune, the data lands in your own Postgres, and a manual override always wins.
 
 ## What you get
 
-- **Markets** — geographic comp sets with daily occupancy, ADR, RevPAR, median price, and 7-day pace
-- **Listings** — your own properties synced via Repull, anchored to a market for benchmarking
-- **Pricing** — per-night recommendations with a confidence score and a one-line reason. Push back to channels in one click
-- **Strategy** — named rule sets for floors/ceilings, day-of-week multipliers, lead-time curves, gap-night discounts, event boosts
+- **Listings** — your own properties synced via Repull
+- **Rates** — per-night rates you can review and push back to every connected channel in one click
+- **Strategy** — named rule sets for floors/ceilings, day-of-week multipliers, lead-time curves and gap-night discounts
 - **Multi-tenant workspaces** (one per signed-in user, model already supports multi-seat invites)
 - **Email magic-link auth** (NextAuth v5, no third-party account required to start)
 - **AES-256-GCM encryption** for per-workspace Repull API keys at rest
@@ -45,7 +40,7 @@ pnpm seed                               # seed demo workspace
 pnpm dev                                # http://localhost:3031
 ```
 
-Sign in (the magic link is printed to the server console in dev), open `/settings`, paste your Repull API key, then go to `/markets` to start tracking comps.
+Sign in (the magic link is printed to the server console in dev), open `/settings`, paste your Repull API key, then open `/listings`.
 
 ## Architecture
 
@@ -121,15 +116,7 @@ Tables (all FK-linked back to `workspaces.id` with `ON DELETE CASCADE`):
 
 ## Roadmap
 
-**v0.1 (this release)** — auth, multi-tenant, schema, sidebar, demo signin, marketing landing, license. Foundation only — sibling agents fill the markets / listings / pricing / strategy surfaces.
-
-**v0.2 (planned)** — full Markets surface with Atlas-backed comp data, Listings sync via `@repull/sdk`, Pricing recommendations table, Strategy rule editor.
-
-**v0.3+** — multi-listing bulk operations, public iCal calendar export, Stripe-Connect billing hook point, optional ML pricing model trained on per-workspace booking history.
-
-## Benchmarks
-
-Coming soon. The current pricing models are in active fine-tuning against real customer data (the in-app honesty banner says so on every page, and we mean it). When the public benchmarks land they will live at `https://github.com/ivannikolovbg/repull-revenue#benchmarks` and will report RevPAR uplift on a fixed reference portfolio.
+**Planned** — multi-listing bulk operations, public iCal calendar export, Stripe-Connect billing hook point.
 
 ## Contributing
 
@@ -142,8 +129,7 @@ Issues and PRs welcome. Please:
 ## Limitations / honest disclosures
 
 - **Single workspace per user** for v1. Multi-workspace switching is a Phase 2 polish — the data model already supports `workspace_members`, but the UI doesn't expose a switcher yet.
-- **Pricing models are in active fine-tuning.** The honesty banner in the bottom-right of every page exists because we mean it. Manual override always wins, and the engine surfaces a confidence score on every recommendation so you can ignore low-confidence noise.
-- **Foundation alpha**: Markets / Listings / Pricing / Strategy surfaces are scaffolded as placeholders in this initial commit. Sibling-agent PRs fill them in. The schema, auth, multi-tenancy, and demo flow are production-shaped and stable.
+- **Manual override always wins.** Treat suggested rates as a starting point, not an autopilot.
 - **API surface, schema, and routes may break before v1.0.** Pin a commit if you ship a fork.
 
 ## License
