@@ -1,0 +1,5 @@
+# Dependencies whose install scripts are allowed to run. pnpm 11+ fails the
+# install (ERR_PNPM_IGNORED_BUILDS) on any build script not listed here.
+allowBuilds:
+  esbuild: true
+  sharp: true
